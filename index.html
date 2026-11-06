@@ -1,0 +1,292 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Catálogo de Pastelitos</title>
+
+<style>
+body {
+    font-family: Arial, sans-serif;
+    background: #fff7ed;
+    margin: 0;
+    color: #492b1c;
+}
+
+header {
+    background: #a84316;
+    color: white;
+    text-align: center;
+    padding: 25px;
+}
+
+header h1 {
+    margin: 0;
+    font-size: 32px;
+}
+
+header p {
+    font-size: 17px;
+}
+
+.contenedor {
+    max-width: 1000px;
+    margin: auto;
+    padding: 20px;
+}
+
+.productos {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+    gap: 25px;
+}
+
+.producto {
+    background: white;
+    border-radius: 15px;
+    padding: 15px;
+    text-align: center;
+    box-shadow: 0 3px 10px #0002;
+}
+
+.producto img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    border-radius: 12px;
+}
+
+.producto h2 {
+    color: #a84316;
+}
+
+.precio {
+    color: #228b22;
+    font-size: 24px;
+    font-weight: bold;
+}
+
+button {
+    background: #a84316;
+    color: white;
+    border: none;
+    padding: 12px 18px;
+    border-radius: 8px;
+    cursor: pointer;
+    margin: 5px;
+    font-size: 15px;
+}
+
+button:hover {
+    background: #702c0d;
+}
+
+.carrito {
+    background: white;
+    margin-top: 30px;
+    padding: 20px;
+    border-radius: 15px;
+    box-shadow: 0 3px 10px #0002;
+}
+
+#lista-carrito {
+    padding-left: 20px;
+}
+
+.total {
+    font-size: 22px;
+    font-weight: bold;
+}
+
+.whatsapp {
+    background: #25D366;
+    width: 100%;
+    font-size: 18px;
+}
+
+.whatsapp:hover {
+    background: #128C7E;
+}
+
+footer {
+    background: #a84316;
+    color: white;
+    text-align: center;
+    padding: 15px;
+    margin-top: 30px;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+    <h1>🥟 Catálogo de Pastelitos 🥟</h1>
+    <p>¡Deliciosos, crujientes y preparados con amor!</p>
+</header>
+
+<div class="contenedor">
+
+<h2 style="text-align:center;">Nuestros productos</h2>
+
+<div class="productos">
+
+    <div class="producto">
+        <img src="pastelito-carne.jpg"
+             alt="Pastelito de carne molida">
+
+        <h2>Pastelito de carne molida</h2>
+
+        <p>Relleno de deliciosa carne molida.</p>
+
+        <p class="precio">RD$20</p>
+
+        <button onclick="agregar('Pastelito de carne molida',20)">
+            Agregar al carrito
+        </button>
+    </div>
+
+    <div class="producto">
+        <img src="pastelito-pollo.jpg"
+             alt="Pastelito de pollo">
+
+        <h2>Pastelito de pollo</h2>
+
+        <p>Relleno de pollo bien sazonado.</p>
+
+        <p class="precio">RD$20</p>
+
+        <button onclick="agregar('Pastelito de pollo',20)">
+            Agregar al carrito
+        </button>
+    </div>
+
+</div>
+
+<div class="carrito">
+
+    <h2>🛒 Mi carrito de compras</h2>
+
+    <ul id="lista-carrito">
+        <li>Tu carrito está vacío.</li>
+    </ul>
+
+    <p class="total">
+        Total: RD$<span id="total">0</span>
+    </p>
+
+    <button onclick="vaciar()">Vaciar carrito</button>
+
+    <button class="whatsapp" onclick="enviarWhatsApp()">
+        📲 Pedir por WhatsApp
+    </button>
+
+</div>
+</div>
+
+<footer>
+    <p>¡Gracias por preferir nuestros pastelitos!</p>
+</footer>
+
+<script>
+
+let carrito = [];
+
+function agregar(nombre, precio) {
+
+    let producto = carrito.find(p => p.nombre === nombre);
+
+    if (producto) {
+        producto.cantidad++;
+    } else {
+        carrito.push({
+            nombre: nombre,
+            precio: precio,
+            cantidad: 1
+        });
+    }
+
+    mostrarCarrito();
+}
+
+function mostrarCarrito() {
+
+    let lista = document.getElementById("lista-carrito");
+    let total = 0;
+
+    lista.innerHTML = "";
+
+    if (carrito.length === 0) {
+        lista.innerHTML = "<li>Tu carrito está vacío.</li>";
+    }
+
+    carrito.forEach((producto, indice) => {
+
+        let subtotal = producto.precio * producto.cantidad;
+        total += subtotal;
+
+        lista.innerHTML += `
+        <li>
+        ${producto.nombre} -
+        RD$${producto.precio} x ${producto.cantidad}
+        = RD$${subtotal}
+
+        <button onclick="eliminar(${indice})">
+        Quitar
+        </button>
+        </li>`;
+    });
+
+    document.getElementById("total").textContent =
+        total.toLocaleString("es-DO");
+}
+
+function eliminar(indice) {
+    carrito.splice(indice, 1);
+    mostrarCarrito();
+}
+
+function vaciar() {
+    carrito = [];
+    mostrarCarrito();
+}
+
+function enviarWhatsApp() {
+
+    if (carrito.length === 0) {
+        alert("Agrega productos al carrito primero.");
+        return;
+    }
+
+    let mensaje = "¡Hola! Quiero realizar este pedido:%0A%0A";
+    let total = 0;
+
+    carrito.forEach(producto => {
+
+        let subtotal = producto.precio * producto.cantidad;
+        total += subtotal;
+
+        mensaje += producto.nombre +
+        " x " + producto.cantidad +
+        " = RD$" + subtotal + "%0A";
+    });
+
+    mensaje += "%0ATotal: RD$" + total;
+    mensaje += "%0A%0A¡Gracias!";
+
+    // REEMPLAZA ESTE NUMERO POR TU WHATSAPP
+    let telefono = "18493867478";
+
+    window.open(
+        "https://wa.me/" + telefono + "?text=" + mensaje,
+        "_blank"
+    );
+}
+
+mostrarCarrito();
+
+</script>
+
+</body>
+</html>
